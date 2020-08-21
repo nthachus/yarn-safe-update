@@ -1,2 +1,5 @@
-# yarn-safe-update
-Safety updating tool for packages in yarn.lock file
+# Yarn safe-update
+
+Updates all packages in `yarn.lock` file safety.
+
+## Usage

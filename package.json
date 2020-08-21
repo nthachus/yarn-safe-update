@@ -1,0 +1,64 @@
+{
+  "name": "yarn-safe-update",
+  "version": "1.0.0",
+  "description": "Safety updating tool for packages in yarn.lock file",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/nthachus/yarn-safe-update",
+    "type": "git"
+  },
+  "author": "Thach Nguyen (https://github.com/nthachus)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=6"
+  },
+  "scripts": {
+    "lint": "eslint . --ignore-path .gitignore",
+    "format": "prettier --write . --ignore-path .gitignore",
+    "test": "jest --verbose",
+    "build": "rimraf dist && webpack --progress"
+  },
+  "dependencies": {
+    "@yarnpkg/lockfile": "^1.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.9.0",
+    "@babel/preset-env": "~7.9.0",
+    "babel-eslint": "10.1.0",
+    "babel-loader": "~8.0.6",
+    "copy-webpack-plugin": "^5.1.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "~14.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-prettier": "^3.1.1",
+    "jest": "^24.9.0",
+    "prettier": "^2.0.5",
+    "webpack": "~4.42.0",
+    "webpack-cli": "^3.3.12"
+  },
+  "resolutions": {
+    "**/findup-sync/resolve-dir/global-modules": "^2.0.0",
+    "webpack-cli/enhanced-resolve": "^4.1.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "6"
+          }
+        }
+      ]
+    ]
+  },
+  "jest": {},
+  "eslintConfig": {
+    "extends": [
+      "airbnb-base",
+      "plugin:prettier/recommended"
+    ],
+    "parser": "babel-eslint"
+  }
+}
