@@ -33,10 +33,8 @@ module.exports = {
       '{LICENSE,*.md}',
       {
         from: 'package.json',
-        transform(content, path) {
-          return content
-            .toString()
-            .replace(/"(d(evD)?ependencies|scripts|eslintConfig)": \{.*?\},?\n/gs, '');
+        transform(content) {
+          return content.toString().replace(/,\s*"scripts":.*(\s+?\}\s*)$/s, '$1');
         },
       },
     ]),
@@ -48,10 +46,7 @@ module.exports = {
       new TerserPlugin({
         cache: true,
         parallel: true,
-        terserOptions: {
-          mangle: false,
-          output: { beautify: true },
-        },
+        terserOptions: { mangle: false, output: { beautify: true } },
       }),
     ],
   },

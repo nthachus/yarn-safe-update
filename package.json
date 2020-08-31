@@ -16,7 +16,8 @@
     "lint": "eslint . --ignore-path .gitignore",
     "format": "prettier --write . --ignore-path .gitignore",
     "test": "jest --verbose",
-    "build": "rimraf dist && webpack --progress"
+    "build": "rimraf dist && webpack --progress",
+    "clean": "rimraf dist node_modules/.cache"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0"
@@ -24,22 +25,28 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@babel/preset-env": "~7.9.0",
-    "babel-eslint": "10.1.0",
+    "acorn": "^6.2.1",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "~8.0.6",
     "copy-webpack-plugin": "^5.1.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "~14.1.0",
     "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-import": "~2.20.1",
     "eslint-plugin-prettier": "^3.1.1",
-    "jest": "^24.9.0",
     "prettier": "^2.0.5",
+    "terser-webpack-plugin": "^1.4.3",
     "webpack": "~4.42.0",
     "webpack-cli": "^3.3.12"
   },
   "resolutions": {
-    "**/findup-sync/resolve-dir/global-modules": "^2.0.0",
-    "webpack-cli/enhanced-resolve": "^4.1.0"
+    "**/assert/util": "^0.11.0",
+    "**/chalk/supports-color": "^6.1.0",
+    "**/debug/ms": "^2.1.1",
+    "**/inquirer/string-width": "^3.1.0",
+    "**/resolve-dir/global-modules": "^2.0.0",
+    "webpack-cli/enhanced-resolve": "^4.1.0",
+    "webpack/eslint-scope": "^5.0.0"
   },
   "babel": {
     "presets": [
@@ -59,6 +66,7 @@
       "airbnb-base",
       "plugin:prettier/recommended"
     ],
-    "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "rules": {}
   }
 }
