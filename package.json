@@ -20,11 +20,15 @@
     "clean": "rimraf dist node_modules/.cache"
   },
   "dependencies": {
-    "@yarnpkg/lockfile": "^1.1.0"
+    "@yarnpkg/lockfile": "^1.1.0",
+    "commander": "^2.20.0",
+    "semver": "~7.0.0",
+    "v8-compile-cache": "^2.0.3",
+    "yarn": "~1.22.4"
   },
   "devDependencies": {
-    "@babel/core": "~7.9.0",
-    "@babel/preset-env": "~7.9.0",
+    "@babel/core": "7.9.0",
+    "@babel/preset-env": "7.9.0",
     "acorn": "^6.2.1",
     "babel-eslint": "^10.1.0",
     "babel-loader": "~8.0.6",
@@ -35,6 +39,7 @@
     "eslint-plugin-import": "~2.20.1",
     "eslint-plugin-prettier": "^3.1.1",
     "prettier": "^2.0.5",
+    "rimraf": "^2.6.3",
     "terser-webpack-plugin": "^1.4.3",
     "webpack": "~4.42.0",
     "webpack-cli": "^3.3.12"
@@ -43,7 +48,10 @@
     "**/assert/util": "^0.11.0",
     "**/chalk/supports-color": "^6.1.0",
     "**/debug/ms": "^2.1.1",
+    "**/define-property/is-descriptor": "^1.0.0",
+    "**/eslint-module-utils/pkg-dir": "^3.0.0",
     "**/inquirer/string-width": "^3.1.0",
+    "**/read-pkg-up/find-up": "^3.0.0",
     "**/resolve-dir/global-modules": "^2.0.0",
     "webpack-cli/enhanced-resolve": "^4.1.0",
     "webpack/eslint-scope": "^5.0.0"
