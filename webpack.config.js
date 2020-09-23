@@ -3,12 +3,13 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
-module.exports = {
+const webpackConfig = (name, type = 'commonjs2') => ({
   mode: 'production',
-  entry: './index',
+  entry: `./${name}`,
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'index.js',
+    filename: `${name}.js`,
+    libraryTarget: type,
   },
   context: __dirname,
   target: 'node',
@@ -27,18 +28,6 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
-    new CopyPlugin([
-      '{LICENSE,*.md}',
-      {
-        from: 'package.json',
-        transform(content) {
-          return content.toString().replace(/,\s*"scripts":.*(\s+?\}\s*)$/s, '$1');
-        },
-      },
-    ]),
-  ],
   optimization: {
     nodeEnv: false,
     // minimize: false,
@@ -50,4 +39,34 @@ module.exports = {
       }),
     ],
   },
-};
+});
+
+module.exports = [
+  Object.assign(webpackConfig('index'), {
+    externals: {
+      'yarn/lib/cli': 'commonjs2 ../yarn/lib/cli',
+    },
+  }),
+  Object.assign(webpackConfig('cli', 'var'), {
+    externals: {
+      './index': 'commonjs2 ./index',
+    },
+    plugins: [
+      new webpack.BannerPlugin({
+        banner: '#!/usr/bin/env node\nrequire("v8-compile-cache");',
+        raw: true,
+      }),
+      new CopyPlugin([
+        '{LICENSE,*.md}',
+        {
+          from: 'package.json',
+          transform(content) {
+            return content
+              .toString()
+              .replace(/"scripts":.*$/s, '"dependencies": { "v8-compile-cache": "2" }\n}');
+          },
+        },
+      ]),
+    ],
+  }),
+];

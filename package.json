@@ -9,6 +9,7 @@
   },
   "author": "Thach Nguyen (https://github.com/nthachus)",
   "license": "MIT",
+  "bin": "./cli.js",
   "engines": {
     "node": ">=6"
   },
@@ -23,7 +24,6 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "commander": "^2.20.0",
     "semver": "~7.0.0",
-    "v8-compile-cache": "^2.0.3",
     "yarn": "~1.22.4"
   },
   "devDependencies": {
@@ -75,6 +75,8 @@
       "plugin:prettier/recommended"
     ],
     "parser": "babel-eslint",
-    "rules": {}
+    "rules": {
+      "no-console": 0
+    }
   }
 }
