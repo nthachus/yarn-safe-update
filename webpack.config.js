@@ -44,7 +44,7 @@ const webpackConfig = (name, type = 'commonjs2') => ({
 module.exports = [
   Object.assign(webpackConfig('index'), {
     externals: {
-      'yarn/lib/cli': 'commonjs2 ../yarn/lib/cli',
+      'yarn/lib/cli': 'commonjs2 yarn/lib/cli',
     },
   }),
   Object.assign(webpackConfig('cli', 'var'), {
