@@ -1,5 +1,5 @@
 const lockfile = require('@yarnpkg/lockfile');
-const semverCoerce = require('semver/functions/coerce');
+const semver = require('semver');
 
 process.argv = [process.argv0, 'yarn', '-v'];
 const { main: yarn } = require('yarn/lib/cli');
@@ -40,7 +40,7 @@ const yarnCli = async (command, args = [], resultType = 'inspect') => {
 const getPackageVersions = async (pkgName) => yarnCli('info', [pkgName, 'versions']);
 
 const getPackageInfo = async (pkgName, version = null) =>
-  yarnCli('info', [version ? `${pkgName}@${semverCoerce(version)}` : pkgName]);
+  yarnCli('info', [version ? `${pkgName}@${version}` : pkgName]);
 
 const parseYarnLock = (content) => lockfile.parse(content).object;
 
@@ -56,26 +56,103 @@ const collectPackages = (json) => {
     const pkg = json[name];
     const [pkgName, version] = parsePackageName(name);
 
-    const key = `${pkgName}@${pkg.version}`;
-    if (packages[key]) {
-      packages[key].versions.push(version);
-    } else {
-      packages[key] = { name: pkgName, pkg, versions: [version] };
+    if (!packages[pkgName]) packages[pkgName] = {};
+    let info = packages[pkgName];
+
+    if (!info[pkg.version]) info[pkg.version] = { pkg, versions: [], updated: false };
+    info = info[pkg.version];
+
+    info.versions.push(version);
+    if (!info.updated && version && semver.clean(version, true) === pkg.version) {
+      info.updated = true;
     }
   });
 
   return packages;
 };
 
+const getObjectKeys = (obj) => obj && Object.keys(obj);
+
+const isCompatibleDeps = async (newDeps, oldDeps) => {
+  const newKeys = getObjectKeys(newDeps);
+  if (!newKeys || !newKeys.length) return true;
+
+  const oldKeys = getObjectKeys(oldDeps);
+  if (!oldKeys || !oldKeys.length) return false;
+
+  // TODO !
+  newKeys.sort();
+  oldKeys.sort();
+
+  return newKeys === oldKeys;
+};
+
+const buildPackageData = (pkg) => ({
+  version: pkg.version,
+  resolved: `${pkg.dist.tarball.replace('.npmjs.org/', '.yarnpkg.com/')}#${pkg.dist.shasum}`,
+  integrity: pkg.dist.integrity,
+  dependencies: pkg.dependencies,
+  optionalDependencies: pkg.optionalDependencies,
+});
+
+const updateAPackage = async (packages, name, version) => {
+  const info = packages[name][version];
+  if (info.updated) return;
+
+  const versions = await getPackageVersions(name);
+  semver.rsort(versions);
+  // console.log('getPackageVersions', versions);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const ver of versions) {
+    if (ver === version) {
+      info.updated = true;
+      break;
+    }
+
+    if (info.versions.every((range) => semver.satisfies(ver, range))) {
+      const pkg = await getPackageInfo(name, ver);
+      if (
+        (await isCompatibleDeps(pkg.optionalDependencies, info.pkg.optionalDependencies)) &&
+        (await isCompatibleDeps(pkg.dependencies, info.pkg.dependencies))
+      ) {
+        info.pkg = buildPackageData(pkg);
+        info.updated = ver;
+        break;
+      }
+    }
+  }
+};
+
+const applyUpdatedPackages = (packages, json) => {
+  Object.keys(packages).forEach((name) => {
+    Object.keys(packages[name]).forEach((version) => {
+      const info = packages[name][version];
+      if (typeof info.updated === 'string') {
+        info.versions.forEach((range) => {
+          // eslint-disable-next-line no-param-reassign
+          json[range ? `${name}@${range}` : name] = info.pkg;
+        });
+      }
+    });
+  });
+};
+
 // TODO: level = 0
 module.exports.updatePackages = async (yarnLock) => {
   const json = parseYarnLock(yarnLock);
-  // console.log('parseYarnLock', json);
   const packages = collectPackages(json);
-  console.log('collectPackages', packages);
+  // console.log('collectPackages', packages);
 
-  console.log('getPackageVersions', await getPackageVersions('semver'));
-  console.log('getPackageInfo', await getPackageInfo('yarn', '1.22.4'));
+  const tasks = [];
+  Object.keys(packages).forEach((name) => {
+    Object.keys(packages[name]).forEach((version) => {
+      tasks.push(updateAPackage(packages, name, version));
+    });
+  });
+
+  await Promise.all(tasks);
+  applyUpdatedPackages(packages, json);
 
   return lockfile.stringify(json);
 };
