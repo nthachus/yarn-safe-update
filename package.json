@@ -2,13 +2,13 @@
   "name": "yarn-safe-update",
   "version": "1.0.0",
   "description": "Safety updating tool for packages in yarn.lock file",
-  "main": "index.js",
+  "author": "Thach Nguyen (https://github.com/nthachus)",
+  "license": "MIT",
   "repository": {
     "url": "https://github.com/nthachus/yarn-safe-update",
     "type": "git"
   },
-  "author": "Thach Nguyen (https://github.com/nthachus)",
-  "license": "MIT",
+  "main": "index.js",
   "bin": "./cli.js",
   "engines": {
     "node": ">=6"
@@ -40,6 +40,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "prettier": "^2.0.5",
     "rimraf": "^2.6.3",
+    "string-replace-loader": "~2.2.0",
     "terser-webpack-plugin": "^1.4.3",
     "webpack": "~4.42.0",
     "webpack-cli": "^3.3.12"

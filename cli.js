@@ -1,8 +1,11 @@
-// #!/usr/bin/env node
+#!/usr/bin/env node
+
 const fs = require('fs');
 const commander = require('commander');
+const { version } = require('./package.json');
 
 commander
+  .version(version, '-v, --version')
   .usage('[options] [yarn.lock path (default: yarn.lock)]')
   .option('-p, --print', 'instead of saving the updated yarn.lock, print the result in stdout');
 

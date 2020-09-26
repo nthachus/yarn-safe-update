@@ -26,6 +26,16 @@ const webpackConfig = (name, type = 'commonjs2') => ({
         loader: 'babel-loader',
         options: { cacheDirectory: true },
       },
+      {
+        test: path.resolve(__dirname, 'cli.js'),
+        loader: 'string-replace-loader',
+        options: { search: '^#!.*[\\r\\n]+', flags: '', replace: '' },
+      },
+      {
+        test: path.resolve(__dirname, 'package.json'),
+        loader: 'string-replace-loader',
+        options: { search: ',\\s*"repository".*$', flags: 's', replace: '}' },
+      },
     ],
   },
   optimization: {
