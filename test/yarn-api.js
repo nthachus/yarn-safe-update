@@ -13,7 +13,7 @@ describe('Yarn API', () => {
     const versions = await getPackageVersions('p-limit');
 
     assert(versions && versions.length, JSON.stringify(versions));
-    versions.forEach((v) => assert(semver.valid(v), v));
+    versions.forEach((v) => assert(semver.valid(v, true), v));
   });
 
   it('gets information of a package', async () => {

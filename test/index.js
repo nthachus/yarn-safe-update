@@ -20,9 +20,8 @@ library@>=1.0.0:
   resolved "https://example.net/library@2.0.0"
 `;
     const updated = await updatePackages(yarnLock);
-    const json = parseYarnLock(updated);
 
-    assert.strictEqual(json['library@2.0.0'].version, '2.0.0', updated);
-    assert.strictEqual(json['library@>=1.0.0'].version, '2.0.0', updated);
+    const json = parseYarnLock(updated);
+    assert.deepStrictEqual(json, parseYarnLock(yarnLock), updated);
   });
 });

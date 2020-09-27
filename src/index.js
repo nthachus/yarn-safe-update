@@ -1,3 +1,4 @@
+/* eslint no-await-in-loop: 0 */
 const lockFile = require('@yarnpkg/lockfile');
 const semver = require('semver');
 
@@ -52,11 +53,36 @@ const selectUpdates = (packages) => {
 };
 
 /**
- * @param {Object} newDeps
- * @param {Object} oldDeps
+ * @param {string} newVer
+ * @param {string} oldVer
+ * @param {Object} packages
+ * @param {string} name
  * @return {Promise<boolean>}
  */
-const isCompatibleDeps = async (newDeps, oldDeps) => {
+const isCompatibleVers = async (newVer, oldVer, packages, name) => {
+  let obj = packages[name];
+  const version = Object.keys(obj).find((v) => obj[v].versions.includes(oldVer));
+  if (!version) {
+    throw new Error(`Could not found package: ${name}@${oldVer}`);
+  }
+
+  if (semver.satisfies(version, newVer, true)) return true;
+
+  obj = obj[version];
+  while (!obj.updated) {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
+
+  return typeof obj.updated === 'string' && semver.satisfies(obj.updated, newVer, true);
+};
+
+/**
+ * @param {Object} newDeps
+ * @param {Object} oldDeps
+ * @param {Object} packages
+ * @return {Promise<boolean>}
+ */
+const isCompatibleDeps = async (newDeps, oldDeps, packages) => {
   const newKeys = getObjectKeys(newDeps);
   if (!newKeys || !newKeys.length) return true;
 
@@ -65,7 +91,22 @@ const isCompatibleDeps = async (newDeps, oldDeps) => {
 
   if (newKeys.some((k) => !oldKeys.includes(k))) return false;
 
-  // TODO !
+  for (let i = newKeys.length - 1; i > 0; i -= 1) {
+    const name = newKeys[i];
+    if (oldDeps[name] && newDeps[name]) {
+      const oldVer = semver.validRange(oldDeps[name], true);
+      const newVer = semver.validRange(newDeps[name], true);
+
+      if (
+        newVer !== oldVer &&
+        newVer !== '*' &&
+        oldVer !== '*' &&
+        !(await isCompatibleVers(newVer, oldVer, packages, name))
+      ) {
+        return false;
+      }
+    }
+  }
 
   return true;
 };
@@ -81,23 +122,30 @@ const updateAPackage = async (packages, name, version) => {
   if (obj.updated) return;
 
   const versions = await getPackageVersions(name);
-  semver.rsort(versions);
+  if (!versions) {
+    throw new Error(`Could not fetch package versions: ${name}`);
+  }
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const ver of versions) {
-    if (semver.lte(ver, version)) {
+  semver.sort(versions, true);
+  for (let i = versions.length - 1; i > 0; i -= 1) {
+    const ver = versions[i];
+    if (semver.lte(ver, version, true)) {
       obj.updated = true;
       break;
     }
 
-    /* eslint-disable no-await-in-loop */
-    if (obj.versions.every((range) => semver.satisfies(ver, range))) {
+    if (obj.versions.every((range) => semver.satisfies(ver, range, true))) {
       const pkg = await getPackageInfo(name, ver);
+      if (!pkg) {
+        throw new Error(`Could not fetch package info: ${name}@${ver}`);
+      }
+
+      const oldPkg = obj.pkg;
       if (
-        (await isCompatibleDeps(pkg.optionalDependencies, obj.pkg.optionalDependencies)) &&
-        (await isCompatibleDeps(pkg.dependencies, obj.pkg.dependencies))
+        (await isCompatibleDeps(pkg.optionalDependencies, oldPkg.optionalDependencies, packages)) &&
+        (await isCompatibleDeps(pkg.dependencies, oldPkg.dependencies, packages))
       ) {
-        obj.pkg = getYarnPackageMeta(pkg, obj.pkg);
+        obj.pkg = getYarnPackageMeta(pkg, oldPkg);
         obj.updated = ver;
         break;
       }

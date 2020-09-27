@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "eslint . --ignore-path .gitignore",
     "format": "prettier --write . --ignore-path .gitignore",
-    "test": "mocha -c -b -t 3000 --full-trace",
+    "test": "mocha -c -b -t 5000 --full-trace",
     "build": "rimraf dist && webpack --progress",
     "clean": "rimraf dist node_modules/.cache"
   },
