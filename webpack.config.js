@@ -5,7 +5,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 const webpackConfig = (name, type = 'commonjs2') => ({
   mode: 'production',
-  entry: `./${name}`,
+  entry: `./src/${name}`,
   output: {
     path: path.join(__dirname, 'dist'),
     filename: `${name}.js`,
@@ -27,7 +27,7 @@ const webpackConfig = (name, type = 'commonjs2') => ({
         options: { cacheDirectory: true },
       },
       {
-        test: path.resolve(__dirname, 'cli.js'),
+        test: path.resolve(__dirname, 'src/cli.js'),
         loader: 'string-replace-loader',
         options: { search: '^#!.*[\\r\\n]+', flags: '', replace: '' },
       },
@@ -73,6 +73,7 @@ module.exports = [
           transform(content) {
             return content
               .toString()
+              .replace(/(":\s*")(.\/)?src\//g, '$1$2')
               .replace(/"scripts":.*$/s, '"dependencies": { "v8-compile-cache": "2" }\n}');
           },
         },

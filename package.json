@@ -8,8 +8,8 @@
     "url": "https://github.com/nthachus/yarn-safe-update",
     "type": "git"
   },
-  "main": "index.js",
-  "bin": "./cli.js",
+  "main": "src/index.js",
+  "bin": "./src/cli.js",
   "engines": {
     "node": ">=6"
   },

@@ -2,7 +2,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const assert = require('assert');
 
-const cliFilePath = path.resolve(__dirname, '../cli.js');
+const cliFilePath = path.resolve(__dirname, '../src/cli.js');
 
 describe('CLI', () => {
   ['-v', '--version'].forEach((arg) => {

@@ -3,7 +3,7 @@
 const fs = require('fs');
 const commander = require('commander');
 
-const { version } = require('./package.json');
+const { version } = require('../package.json');
 
 commander
   .version(version, '-v, --version')

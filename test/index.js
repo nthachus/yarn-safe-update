@@ -1,8 +1,8 @@
-// const lockfile = require('@yarnpkg/lockfile');
+// const lockFile = require('@yarnpkg/lockfile');
 const assert = require('assert');
-const { updatePackages } = require('../index');
+const { updatePackages } = require('../src');
 
-// const parseYarnLock = (content) => lockfile.parse(content).object;
+// const parseYarnLock = (content) => lockFile.parse(content).object;
 
 describe('Library', () => {
   it('should not update fixed version', async () => {
