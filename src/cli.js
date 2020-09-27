@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const commander = require('commander');
-
 const { version } = require('../package.json');
 
 commander
@@ -15,6 +14,10 @@ const file = commander.args.length ? commander.args[0] : 'yarn.lock';
 
 const { updatePackages } = require('./index');
 
+/**
+ * @param {string} path
+ * @param {Object} opts
+ */
 const main = async (path, opts) => {
   try {
     const yarnLock = fs.readFileSync(path, 'utf8');

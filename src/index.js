@@ -4,6 +4,10 @@ const semver = require('semver');
 const { getPackageVersions, getPackageInfo } = require('./yarn-api');
 const { parsePackageName, getObjectKeys, getYarnPackageMeta } = require('./utils');
 
+/**
+ * @param {Object} json
+ * @return {Object}
+ */
 const collectPackages = (json) => {
   const packages = {};
 
@@ -26,6 +30,10 @@ const collectPackages = (json) => {
   return packages;
 };
 
+/**
+ * @param {Object} packages
+ * @return {Object}
+ */
 const selectUpdates = (packages) => {
   const json = {};
 
@@ -43,6 +51,11 @@ const selectUpdates = (packages) => {
   return json;
 };
 
+/**
+ * @param {Object} newDeps
+ * @param {Object} oldDeps
+ * @return {Promise<boolean>}
+ */
 const isCompatibleDeps = async (newDeps, oldDeps) => {
   const newKeys = getObjectKeys(newDeps);
   if (!newKeys || !newKeys.length) return true;
@@ -53,12 +66,16 @@ const isCompatibleDeps = async (newDeps, oldDeps) => {
   if (newKeys.some((k) => !oldKeys.includes(k))) return false;
 
   // TODO !
-  newKeys.sort();
-  oldKeys.sort();
 
-  return newKeys === oldKeys;
+  return true;
 };
 
+/**
+ * @param {Object} packages
+ * @param {string} name
+ * @param {string} version
+ * @return {Promise<undefined>}
+ */
 const updateAPackage = async (packages, name, version) => {
   const obj = packages[name][version];
   if (obj.updated) return;
@@ -88,7 +105,11 @@ const updateAPackage = async (packages, name, version) => {
   }
 };
 
-// TODO: level = 0
+/**
+ * TODO: level = 0
+ * @param {string} yarnLock
+ * @return {Promise<string>}
+ */
 const updatePackages = async (yarnLock) => {
   const json = lockFile.parse(yarnLock).object;
   const packages = collectPackages(json);

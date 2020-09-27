@@ -1,5 +1,9 @@
 const originalStdoutWrite = process.stdout.write;
 
+/**
+ * @param {Array} results
+ * @return {Function}
+ */
 const hookStdout = (results) => {
   process.stdout.write = (data, ...args) => {
     if (/^{"type":".*?".*}\s*$/.test(data)) {
@@ -14,15 +18,32 @@ const hookStdout = (results) => {
   };
 };
 
+/**
+ * @param {string} name
+ * @return {string[]}
+ */
 const parsePackageName = (name) => {
   const i = name.lastIndexOf('@');
   return i > 0 ? [name.substr(0, i), name.substr(i + 1)] : [name, null];
 };
 
+/**
+ * @param {Object} obj
+ * @return {string[]}
+ */
 const getObjectKeys = (obj) => obj && Object.keys(obj);
 
+/**
+ * @param {string} text
+ * @return {string}
+ */
 const escapeRegex = (text) => text.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
 
+/**
+ * @param {Object} pkg
+ * @param {Object} oldPkg
+ * @return {string}
+ */
 const resolvePackageUrl = (pkg, oldPkg) => {
   let url =
     pkg.dist && pkg.dist.tarball
@@ -33,6 +54,11 @@ const resolvePackageUrl = (pkg, oldPkg) => {
   return pkg.dist && pkg.dist.shasum ? `${url}#${pkg.dist.shasum}` : url;
 };
 
+/**
+ * @param {Object} pkg
+ * @param {Object} oldPkg
+ * @return {*}
+ */
 const getYarnPackageMeta = (pkg, oldPkg) => ({
   version: pkg.version,
   resolved: resolvePackageUrl(pkg, oldPkg),
