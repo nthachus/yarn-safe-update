@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "eslint . --ignore-path .gitignore",
     "format": "prettier --write . --ignore-path .gitignore",
-    "test": "yarn lint && mocha -c -b",
+    "test": "mocha -c -b -t 3000 --full-trace",
     "build": "rimraf dist && webpack --progress",
     "clean": "rimraf dist node_modules/.cache"
   },
@@ -29,6 +29,8 @@
   "devDependencies": {
     "@babel/core": "7.9.0",
     "@babel/preset-env": "7.9.0",
+    "@types/mocha": "^7.0.0",
+    "@types/node": "^6.14.0",
     "acorn": "^6.2.1",
     "babel-eslint": "^10.1.0",
     "babel-loader": "~8.0.6",
@@ -37,7 +39,6 @@
     "eslint-config-airbnb-base": "~14.1.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "~2.20.1",
-    "eslint-plugin-prettier": "^3.1.1",
     "mocha": "^6.2.2",
     "prettier": "^2.0.5",
     "rimraf": "^2.6.3",
@@ -77,12 +78,12 @@
   "eslintConfig": {
     "extends": [
       "airbnb-base",
-      "plugin:prettier/recommended"
+      "prettier"
     ],
     "parser": "babel-eslint",
     "rules": {
       "no-console": 0,
-      "no-await-in-loop": 0
+      "prefer-object-spread": 0
     }
   }
 }

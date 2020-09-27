@@ -50,6 +50,8 @@ const isCompatibleDeps = async (newDeps, oldDeps) => {
   const oldKeys = getObjectKeys(oldDeps);
   if (!oldKeys || !oldKeys.length) return false;
 
+  if (newKeys.some((k) => !oldKeys.includes(k))) return false;
+
   // TODO !
   newKeys.sort();
   oldKeys.sort();
@@ -71,6 +73,7 @@ const updateAPackage = async (packages, name, version) => {
       break;
     }
 
+    /* eslint-disable no-await-in-loop */
     if (obj.versions.every((range) => semver.satisfies(ver, range))) {
       const pkg = await getPackageInfo(name, ver);
       if (

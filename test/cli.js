@@ -15,7 +15,7 @@ describe('CLI', () => {
   ['-h', '--help'].forEach((arg) => {
     it(`prints help with option '${arg}'`, () => {
       const out = execFileSync(process.execPath, [cliFilePath, arg]);
-      assert(/^Usage: cli \[options\] \[yarn\.lock path\b.*?\]/.test(out), out);
+      assert(/^Usage: cli \[options] \[yarn\.lock path\b.*?]/.test(out), out);
     });
   });
 

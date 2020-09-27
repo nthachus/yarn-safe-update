@@ -2,7 +2,7 @@ const originalStdoutWrite = process.stdout.write;
 
 const hookStdout = (results) => {
   process.stdout.write = (data, ...args) => {
-    if (/^\{"type":".*?".*\}\s*$/.test(data)) {
+    if (/^{"type":".*?".*}\s*$/.test(data)) {
       results.push(JSON.parse(data));
     } else {
       originalStdoutWrite.call(process.stdout, data, ...args);
@@ -46,6 +46,5 @@ module.exports = {
   parsePackageName,
   getObjectKeys,
   escapeRegex,
-  resolvePackageUrl,
   getYarnPackageMeta,
 };

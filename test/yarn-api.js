@@ -10,16 +10,17 @@ describe('Yarn API', () => {
   });
 
   it('gets versions of a package', async () => {
-    const versions = await getPackageVersions('isobject');
+    const versions = await getPackageVersions('p-limit');
 
     assert(versions && versions.length, JSON.stringify(versions));
     versions.forEach((v) => assert(semver.valid(v), v));
   });
 
   it('gets information of a package', async () => {
-    const info = await getPackageInfo('isobject', '2.1.0');
+    const info = await getPackageInfo('p-limit', '2.3.0');
 
     assert(info && typeof info === 'object', JSON.stringify(info));
-    assert.deepStrictEqual(info.dependencies, { isarray: '1.0.0' });
+    assert.strictEqual(info.dist.shasum, '3dd33c647a214fdfffd835933eb086da0dc21db1');
+    assert.deepStrictEqual(info.dependencies, { 'p-try': '^2.0.0' });
   });
 });

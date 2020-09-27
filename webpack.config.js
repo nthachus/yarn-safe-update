@@ -3,14 +3,8 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
-const webpackConfig = (name, type = 'commonjs2') => ({
+const config = {
   mode: 'production',
-  entry: `./src/${name}`,
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: `${name}.js`,
-    libraryTarget: type,
-  },
   context: __dirname,
   target: 'node',
   node: {
@@ -49,15 +43,19 @@ const webpackConfig = (name, type = 'commonjs2') => ({
       }),
     ],
   },
-});
+};
 
+// noinspection JSUnusedGlobalSymbols
 module.exports = [
-  Object.assign(webpackConfig('index'), {
+  Object.assign({}, config, {
+    entry: { index: './src/index' },
+    output: { libraryTarget: 'commonjs2' },
     externals: {
       'yarn/lib/cli': 'commonjs2 yarn/lib/cli',
     },
   }),
-  Object.assign(webpackConfig('cli', 'var'), {
+  Object.assign({}, config, {
+    entry: { cli: './src/cli' },
     externals: {
       './index': 'commonjs2 ./index',
     },
@@ -70,7 +68,7 @@ module.exports = [
         '{LICENSE,*.md}',
         {
           from: 'package.json',
-          transform(content) {
+          transform: (content) => {
             return content
               .toString()
               .replace(/(":\s*")(.\/)?src\//g, '$1$2')

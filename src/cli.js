@@ -33,4 +33,5 @@ const main = async (path, opts) => {
   }
 };
 
+// noinspection JSIgnoredPromiseFromCall
 main(file, commander.opts());
