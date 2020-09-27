@@ -63,7 +63,6 @@ const updateAPackage = async (packages, name, version) => {
 
   const versions = await getPackageVersions(name);
   semver.rsort(versions);
-  // console.log('getPackageVersions', versions);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const ver of versions) {
@@ -90,7 +89,6 @@ const updateAPackage = async (packages, name, version) => {
 const updatePackages = async (yarnLock) => {
   const json = lockFile.parse(yarnLock).object;
   const packages = collectPackages(json);
-  // console.log('collectPackages', packages);
 
   const tasks = [];
   Object.keys(packages).forEach((name) => {

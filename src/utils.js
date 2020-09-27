@@ -21,10 +21,17 @@ const parsePackageName = (name) => {
 
 const getObjectKeys = (obj) => obj && Object.keys(obj);
 
-const resolvePackageUrl = (pkg, oldPkg) =>
-  oldPkg.resolved
-    .replace(`-${oldPkg.version}.`, `-${pkg.version}.`)
-    .replace(/#[0-9a-f]+$/i, pkg.dist && pkg.dist.shasum ? `#${pkg.dist.shasum}` : '');
+const escapeRegex = (text) => text.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+
+const resolvePackageUrl = (pkg, oldPkg) => {
+  let url =
+    pkg.dist && pkg.dist.tarball
+      ? pkg.dist.tarball.replace('.npmjs.org/', '.yarnpkg.com/')
+      : oldPkg.resolved.replace(new RegExp(`\\b${escapeRegex(oldPkg.version)}\\b`), pkg.version);
+
+  url = url.replace(/#[^#]*$/, '');
+  return pkg.dist && pkg.dist.shasum ? `${url}#${pkg.dist.shasum}` : url;
+};
 
 const getYarnPackageMeta = (pkg, oldPkg) => ({
   version: pkg.version,
@@ -38,5 +45,7 @@ module.exports = {
   hookStdout,
   parsePackageName,
   getObjectKeys,
+  escapeRegex,
+  resolvePackageUrl,
   getYarnPackageMeta,
 };

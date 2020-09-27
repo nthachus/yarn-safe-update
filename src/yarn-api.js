@@ -6,7 +6,6 @@ process.argv = originalArgv;
 const { hookStdout } = require('./utils');
 
 const getYarnResult = (results, resultType = null) => {
-  // console.log('getYarnResult', results);
   const result = results.find((r) => !resultType || r.type === resultType);
   return result && result.data;
 };
