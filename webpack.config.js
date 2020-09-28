@@ -49,9 +49,8 @@ const config = {
 module.exports = [
   Object.assign({}, config, {
     entry: { index: './src/index' },
-    output: { libraryTarget: 'commonjs2' },
-    externals: {
-      'yarn/lib/cli': 'commonjs2 yarn/lib/cli',
+    output: {
+      libraryTarget: 'commonjs2',
     },
   }),
   Object.assign({}, config, {

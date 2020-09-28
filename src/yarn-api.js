@@ -1,57 +1,73 @@
-const originalArgv = process.argv;
-process.argv = [process.argv0, 'yarn', '-v'];
-const { main: yarn } = require('yarn/lib/cli');
-
-process.argv = originalArgv;
-const { hookStdout } = require('./utils');
+const { execSync } = require('child_process');
 
 /**
- * @param {Array} results
- * @param {?string=} resultType
+ * @param {string} pkg
+ * @param {?string=} field
  * @return {*}
  */
-const getYarnResult = (results, resultType = null) => {
-  const result = results.find((r) => !resultType || r.type === resultType);
-  return result && result.data;
+const yarnInfo = (pkg, field = null) => {
+  const out = execSync(`yarn info --json "${pkg}" ${field || ''}`);
+
+  const m = /^{"type":"inspect".*}\s*$/m.exec(out);
+  if (!m) throw new Error(out.toString().trim());
+
+  return JSON.parse(m[0]).data;
 };
 
 /**
- * @param {string} command
- * @param {string[]} args
- * @param {?string=} resultType
- * @return {Promise}
+ * @param {string} name
+ * @return {string[]}
  */
-const yarnCli = async (command, args = [], resultType = 'inspect') => {
-  args.unshift(command, '--json');
-
-  const results = [];
-  const unhookStdout = hookStdout(results);
-  try {
-    await yarn({ startArgs: [process.argv0, 'yarn'], args, endArgs: [] });
-  } finally {
-    unhookStdout();
-  }
-
-  return getYarnResult(results, resultType);
+const parsePackageName = (name) => {
+  const i = name.lastIndexOf('@');
+  return i > 0 ? [name.substr(0, i), name.substr(i + 1)] : [name, null];
 };
 
 /**
- * @param {string} pkgName
- * @return {Promise<string[]>}
+ * @param {Object} obj
+ * @return {string[]}
  */
-const getPackageVersions = async (pkgName) => yarnCli('info', [pkgName, 'versions']);
+const getObjectKeys = (obj) => obj && Object.keys(obj);
 
 /**
- * @param {string} pkgName
- * @param {?string=} version
- * @return {Promise<Object>}
+ * @param {string} text
+ * @return {string}
  */
-const getPackageInfo = async (pkgName, version = null) =>
-  yarnCli('info', [version ? `${pkgName}@${version}` : pkgName]);
+const escapeRegex = (text) => text.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+
+/**
+ * @param {Object} pkg
+ * @param {Object} oldPkg
+ * @return {string}
+ */
+const resolvePackageUrl = (pkg, oldPkg) => {
+  let url =
+    pkg.dist && pkg.dist.tarball
+      ? pkg.dist.tarball.replace('.npmjs.org/', '.yarnpkg.com/')
+      : oldPkg.resolved.replace(new RegExp(`\\b${escapeRegex(oldPkg.version)}\\b`), pkg.version);
+
+  url = url.replace(/#[^#]*$/, '');
+  return pkg.dist && pkg.dist.shasum ? `${url}#${pkg.dist.shasum}` : url;
+};
+
+/**
+ * @param {Object} pkg
+ * @param {Object} oldPkg
+ * @return {*}
+ */
+const buildPackageData = (pkg, oldPkg) => ({
+  version: pkg.version,
+  resolved: resolvePackageUrl(pkg, oldPkg),
+  integrity: pkg.dist && pkg.dist.integrity,
+  dependencies: pkg.dependencies,
+  optionalDependencies: pkg.optionalDependencies,
+});
 
 module.exports = {
-  getYarnResult,
-  yarnCli,
-  getPackageVersions,
-  getPackageInfo,
+  yarnInfo,
+  parsePackageName,
+  getObjectKeys,
+  escapeRegex,
+  resolvePackageUrl,
+  buildPackageData,
 };
