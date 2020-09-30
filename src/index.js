@@ -135,11 +135,7 @@ const updateAPackage = (packages, name, version) => {
       return true;
     }
 
-    if (
-      obj.versions.some(
-        (range) => semver.satisfies(version, range, true) && !semver.satisfies(ver, range, true)
-      )
-    ) {
+    if (obj.versions.some((range) => semver.satisfies(version, range, true) && !semver.satisfies(ver, range, true))) {
       return false;
     }
 

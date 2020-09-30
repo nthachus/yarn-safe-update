@@ -14,11 +14,12 @@
     "node": ">=6"
   },
   "scripts": {
-    "lint": "eslint . --ignore-path .gitignore",
-    "format": "prettier --write \"**/*.{js,json,md}\" --ignore-path .gitignore",
-    "test": "mocha -c -b -t 5000",
-    "build": "rimraf dist && webpack --progress",
-    "clean": "rimraf dist node_modules/.cache"
+    "lint": "node -r ./babel-register node_modules/eslint/bin/eslint.js . --ignore-path .gitignore",
+    "format": "node node_modules/prettier/bin-prettier.js --write \"**/*.{js,json,md}\" --ignore-path .gitignore",
+    "test": "node node_modules/mocha/bin/mocha -c -r ./babel-register -b -t 5000",
+    "exec": "node -r ./babel-register src/cli.js",
+    "build": "node node_modules/rimraf/bin.js dist && node node_modules/webpack/bin/webpack.js --progress",
+    "clean": "node node_modules/rimraf/bin.js dist node_modules/.cache"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@babel/preset-env": "~7.9.0",
+    "@babel/register": "~7.9.0",
     "@types/mocha": "^7.0.0",
     "@types/node": "^6.14.0",
     "acorn": "^6.2.1",

@@ -70,7 +70,7 @@ module.exports = [
           transform: (content) => {
             return String(content)
               .replace(/(":\s*")(.\/)?src\//g, '$1$2')
-              .replace(/"scripts":[\s\S]*$/, '"dependencies": { "v8-compile-cache": "2" }\n}\n');
+              .replace(/(\s*)"scripts":[\s\S]*$/, '$1"dependencies": {$1  "v8-compile-cache": "2"$1}\n}\n');
           },
         },
       ]),
