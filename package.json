@@ -15,8 +15,8 @@
   },
   "scripts": {
     "lint": "eslint . --ignore-path .gitignore",
-    "format": "prettier --write . --ignore-path .gitignore",
-    "test": "mocha -c -r @babel/register -b",
+    "format": "prettier --write \"**/*.{js,json,md}\" --ignore-path .gitignore",
+    "test": "mocha -c -b -t 5000",
     "build": "rimraf dist && webpack --progress",
     "clean": "rimraf dist node_modules/.cache"
   },
@@ -28,7 +28,6 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@babel/preset-env": "~7.9.0",
-    "@babel/register": "~7.9.0",
     "@types/mocha": "^7.0.0",
     "@types/node": "^6.14.0",
     "acorn": "^6.2.1",
@@ -37,10 +36,10 @@
     "copy-webpack-plugin": "^5.1.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "~14.1.0",
-    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-prettier": "~6.9.0",
     "eslint-plugin-import": "~2.20.1",
     "mocha": "^6.2.2",
-    "prettier": "^2.0.5",
+    "prettier": "^1.19.1",
     "rimraf": "^2.6.3",
     "string-replace-loader": "~2.2.0",
     "terser-webpack-plugin": "^1.4.3",
@@ -63,18 +62,6 @@
     "webpack-cli/enhanced-resolve": "^4.1.0",
     "webpack/eslint-scope": "^5.0.0"
   },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "6"
-          }
-        }
-      ]
-    ]
-  },
   "eslintConfig": {
     "extends": [
       "airbnb-base",
@@ -85,5 +72,9 @@
       "no-console": 0,
       "prefer-object-spread": 0
     }
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "arrowParens": "always"
   }
 }

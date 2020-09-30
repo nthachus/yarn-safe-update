@@ -28,7 +28,7 @@ const config = {
       {
         test: path.resolve(__dirname, 'package.json'),
         loader: 'string-replace-loader',
-        options: { search: ',\\s*"repository".*$', flags: 's', replace: '}' },
+        options: { search: ',\\s*"repository"[\\s\\S]*$', flags: '', replace: '\n}' },
       },
     ],
   },
@@ -68,10 +68,9 @@ module.exports = [
         {
           from: 'package.json',
           transform: (content) => {
-            return content
-              .toString()
+            return String(content)
               .replace(/(":\s*")(.\/)?src\//g, '$1$2')
-              .replace(/"scripts":.*$/s, '"dependencies": { "v8-compile-cache": "2" }\n}');
+              .replace(/"scripts":[\s\S]*$/, '"dependencies": { "v8-compile-cache": "2" }\n}\n');
           },
         },
       ]),
