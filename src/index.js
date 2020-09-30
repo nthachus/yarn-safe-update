@@ -102,16 +102,13 @@ const isCompatibleDeps = (newDeps, oldDeps, packages) => {
 
     const newVer = semver.validRange(newDeps[name], true);
     const oldVer = semver.validRange(oldDeps[name], true);
-    if (
+
+    return (
       newVer === oldVer ||
       newVer === '*' ||
       oldVer === '*' ||
       isCompatibleVers(newDeps[name], oldDeps[name], packages, name)
-    ) {
-      return true;
-    }
-
-    return false;
+    );
   });
 };
 

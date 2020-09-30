@@ -8,7 +8,7 @@ const { execSync } = require('child_process');
 const yarnInfo = (pkg, field = null) => {
   const out = execSync(`yarn info --json "${pkg}" ${field || ''}`);
 
-  const m = /^{"type":"inspect".*}\s*$/m.exec(out);
+  const m = /^{"type":"inspect".*}\s*$/m.exec(String(out));
   if (!m) throw new Error(out.toString().trim());
 
   return JSON.parse(m[0]).data;
