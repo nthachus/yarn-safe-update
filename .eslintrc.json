@@ -1,0 +1,26 @@
+{
+  "root": true,
+  "extends": [
+    "airbnb-base",
+    "plugin:flowtype/recommended",
+    "prettier"
+  ],
+  "rules": {
+    "no-console": 0
+  },
+  "settings": {
+    "flowtype": {
+      "onlyFilesWithFlowAnnotation": true
+    }
+  },
+  "overrides": [
+    {
+      "files": [
+        "test/**/*"
+      ],
+      "env": {
+        "mocha": true
+      }
+    }
+  ]
+}

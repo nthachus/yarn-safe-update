@@ -1,6 +1,9 @@
-const assert = require('assert');
-const semver = require('semver');
-const { yarnInfo, parsePackageName } = require('../src/yarn-api');
+// @flow
+import assert from 'assert';
+import semver from 'semver';
+
+import type { Manifest } from '../src/yarn-api';
+import { parsePackageName, yarnInfo } from '../src/yarn-api';
 
 describe('Yarn API', () => {
   it('parses package name', () => {
@@ -22,7 +25,7 @@ describe('Yarn API', () => {
   });
 
   it('gets information of a package', () => {
-    const info = yarnInfo('p-limit@2.3.0');
+    const info: ?Manifest = yarnInfo('p-limit@2.3.0');
 
     assert(info && typeof info === 'object', JSON.stringify(info));
     assert.deepStrictEqual(info.dependencies, { 'p-try': '^2.0.0' });

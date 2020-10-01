@@ -1,12 +1,11 @@
-const assert = require('assert');
-const lockFile = require('@yarnpkg/lockfile');
-const { updatePackages } = require('../src');
+// @flow
+import assert from 'assert';
+import lockfile from '@yarnpkg/lockfile';
 
-/**
- * @param {string} content
- * @return {Object}
- */
-const parseYarnLock = (content) => lockFile.parse(content).object;
+import type { LockfileObject } from '../src/yarn-api';
+import { updatePackages } from '../src';
+
+const parseYarnLock = (content: string): LockfileObject => lockfile.parse(content).object;
 
 describe('Library', () => {
   it('should not update fixed version', () => {

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
+// @flow
+import fs from 'fs';
+import commander from 'commander';
 
-const fs = require('fs');
-const commander = require('commander');
-
-const { version } = require('../package.json');
-const { updatePackages } = require('./index');
+import { version } from '../package.json';
+import { updatePackages } from './index';
 
 commander
   .version(version, '-v, --version')

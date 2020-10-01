@@ -1,9 +1,10 @@
-const path = require('path');
-const { execFileSync } = require('child_process');
-const assert = require('assert');
+// @flow
+import path from 'path';
+import { execFileSync } from 'child_process';
+import assert from 'assert';
 
 const cliFilePath = path.resolve(__dirname, '../dist/cli.js');
-const executeCli = (...args) => execFileSync(process.execPath, [cliFilePath, ...args]);
+const executeCli = (...args: string[]): string => execFileSync(process.execPath, [cliFilePath, ...args]);
 
 describe('CLI', () => {
   ['-v', '--version'].forEach((arg) => {

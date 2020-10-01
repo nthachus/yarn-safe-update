@@ -14,10 +14,10 @@
     "node": ">=6"
   },
   "scripts": {
-    "lint": "node -r ./babel-register node_modules/eslint/bin/eslint.js . --ignore-path .gitignore",
-    "format": "node node_modules/prettier/bin-prettier.js --write \"**/*.{js,json,md}\" --ignore-path .gitignore",
-    "test": "node node_modules/mocha/bin/mocha -c -r ./babel-register -b -t 5000",
-    "exec": "node -r ./babel-register src/cli.js",
+    "lint": "node -r ./test-setup node_modules/eslint/bin/eslint.js . && node node_modules/flow-bin/cli.js check",
+    "format": "node node_modules/prettier/bin-prettier.js --write \"**/*.{js,json,md}\" --ignore-path .eslintignore",
+    "test": "node node_modules/mocha/bin/mocha -c -r ./test-setup -b -t 5000",
+    "exec": "node -r ./test-setup src/cli.js",
     "build": "node node_modules/rimraf/bin.js dist && node node_modules/webpack/bin/webpack.js --progress",
     "clean": "node node_modules/rimraf/bin.js dist node_modules/.cache"
   },
@@ -29,9 +29,8 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@babel/preset-env": "~7.9.0",
+    "@babel/preset-flow": "~7.9.0",
     "@babel/register": "~7.9.0",
-    "@types/mocha": "^7.0.0",
-    "@types/node": "^6.14.0",
     "acorn": "^6.2.1",
     "babel-eslint": "^10.1.0",
     "babel-loader": "~8.0.6",
@@ -39,8 +38,11 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "~14.1.0",
     "eslint-config-prettier": "~6.9.0",
+    "eslint-plugin-flowtype": "^4.7.0",
     "eslint-plugin-import": "~2.20.1",
+    "flow-bin": "0",
     "mocha": "^6.2.2",
+    "object.entries": "^1.1.1",
     "prettier": "^1.19.1",
     "rimraf": "^2.6.3",
     "string-replace-loader": "~2.2.0",
@@ -64,19 +66,16 @@
     "webpack-cli/enhanced-resolve": "^4.1.0",
     "webpack/eslint-scope": "^5.0.0"
   },
-  "eslintConfig": {
-    "extends": [
-      "airbnb-base",
-      "prettier"
-    ],
-    "parser": "babel-eslint",
-    "rules": {
-      "no-console": 0,
-      "prefer-object-spread": 0
-    }
-  },
   "prettier": {
     "trailingComma": "es5",
-    "arrowParens": "always"
+    "arrowParens": "always",
+    "overrides": [
+      {
+        "files": "*.json",
+        "options": {
+          "parser": "json-stringify"
+        }
+      }
+    ]
   }
 }

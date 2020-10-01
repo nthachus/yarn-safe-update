@@ -1,24 +1,37 @@
-const lockFile = require('@yarnpkg/lockfile');
-const semver = require('semver');
-const { yarnInfo, parsePackageName, getObjectKeys, buildPackageData } = require('./yarn-api');
+// @flow
+import lockfile from '@yarnpkg/lockfile';
+import semver from 'semver';
 
-/**
- * TODO excludes
- * @param {Object} json
- * @return {Object}
- */
-const collectPackages = (json) => {
-  const packages = {};
+import type { Dependencies, LockfileObject, LockManifest, Manifest } from './yarn-api';
+import { buildPackageData, getObjectKeys, parsePackageName, yarnInfo } from './yarn-api';
 
-  Object.keys(json).forEach((name) => {
-    const pkg = json[name];
+export type CollectedPackage = {
+  versions: (?string)[],
+  updated: boolean | string,
+  pkg: LockManifest,
+};
+
+export type GroupedPackages = {
+  [key: string]: CollectedPackage,
+};
+
+export type CollectedPackages = {
+  [key: string]: GroupedPackages,
+};
+
+// TODO excludes
+export const collectPackages = (json: LockfileObject): CollectedPackages => {
+  const packages: CollectedPackages = {};
+
+  Object.keys(json).forEach((name: string) => {
+    const pkg: LockManifest = json[name];
     const [pkgName, version] = parsePackageName(name);
 
     if (!packages[pkgName]) packages[pkgName] = {};
-    let obj = packages[pkgName];
+    const group: GroupedPackages = packages[pkgName];
 
-    if (!obj[pkg.version]) obj[pkg.version] = { pkg, versions: [], updated: false };
-    obj = obj[pkg.version];
+    if (!group[pkg.version]) group[pkg.version] = { pkg, versions: [], updated: false };
+    const obj: CollectedPackage = group[pkg.version];
 
     obj.versions.push(version);
     if (!obj.updated && version && semver.clean(version, true) === pkg.version) {
@@ -30,12 +43,8 @@ const collectPackages = (json) => {
   return packages;
 };
 
-/**
- * @param {Object} packages
- * @return {Object}
- */
-const selectUpdates = (packages) => {
-  const json = {};
+export const selectUpdates = (packages: CollectedPackages): LockfileObject => {
+  const json: LockfileObject = {};
 
   Object.keys(packages).forEach((name) => {
     Object.keys(packages[name]).forEach((version) => {
@@ -51,21 +60,14 @@ const selectUpdates = (packages) => {
   return json;
 };
 
-/**
- * @param {string} newVer
- * @param {string} oldVer
- * @param {Object} packages
- * @param {string} name
- * @return {boolean}
- */
-const isCompatibleVers = (newVer, oldVer, packages, name) => {
-  let obj = packages[name];
-  const version = Object.keys(obj).find((v) => obj[v].versions.includes(oldVer));
+const isCompatibleVers = (newVer: string, oldVer: string, packages: CollectedPackages, name: string): boolean => {
+  const group: GroupedPackages = packages[name];
+  const version = Object.keys(group).find((v: string) => group[v].versions.includes(oldVer));
   if (!version) {
     throw new Error(`Could not found package: ${name}@${oldVer}`);
   }
 
-  obj = obj[version];
+  const obj: CollectedPackage = group[version];
   if (!semver.satisfies(version, newVer, true)) {
     if (!obj.updated) {
       updateAPackage(packages, name, version); // eslint-disable-line no-use-before-define
@@ -82,22 +84,16 @@ const isCompatibleVers = (newVer, oldVer, packages, name) => {
   return true;
 };
 
-/**
- * @param {Object} newDeps
- * @param {Object} oldDeps
- * @param {Object} packages
- * @return {boolean}
- */
-const isCompatibleDeps = (newDeps, oldDeps, packages) => {
+const isCompatibleDeps = (newDeps: ?Dependencies, oldDeps: ?Dependencies, packages: CollectedPackages): boolean => {
   const newKeys = getObjectKeys(newDeps);
   if (!newKeys || !newKeys.length) return true;
 
   const oldKeys = getObjectKeys(oldDeps);
   if (!oldKeys || !oldKeys.length) return false;
 
-  if (newKeys.some((k) => !oldKeys.includes(k))) return false;
+  if (newKeys.some((k: string) => !oldKeys.includes(k))) return false;
 
-  return newKeys.every((name) => {
+  return newKeys.every((name: string) => {
     if (!newDeps[name] || !oldDeps[name]) return true;
 
     const newVer = semver.validRange(newDeps[name], true);
@@ -112,22 +108,17 @@ const isCompatibleDeps = (newDeps, oldDeps, packages) => {
   });
 };
 
-/**
- * @param {Object} packages
- * @param {string} name
- * @param {string} version
- */
-const updateAPackage = (packages, name, version) => {
-  const obj = packages[name][version];
+const updateAPackage = (packages: CollectedPackages, name: string, version: string): void => {
+  const obj: CollectedPackage = packages[name][version];
   if (obj.updated) return;
 
-  const versions = yarnInfo(name, 'versions');
+  const versions: ?(string[]) = yarnInfo(name, 'versions');
   if (!versions) {
     throw new Error(`Could not fetch package versions: ${name}`);
   }
   semver.rsort(versions, true);
 
-  versions.some((ver) => {
+  versions.some((ver: string) => {
     if (semver.lte(ver, version, true)) {
       obj.updated = true;
 
@@ -135,11 +126,15 @@ const updateAPackage = (packages, name, version) => {
       return true;
     }
 
-    if (obj.versions.some((range) => semver.satisfies(version, range, true) && !semver.satisfies(ver, range, true))) {
+    if (
+      obj.versions.some(
+        (range: ?string) => range && semver.satisfies(version, range, true) && !semver.satisfies(ver, range, true)
+      )
+    ) {
       return false;
     }
 
-    const pkg = yarnInfo(`${name}@${ver}`);
+    const pkg: ?Manifest = yarnInfo(`${name}@${ver}`);
     if (!pkg) {
       throw new Error(`Could not fetch package info: ${name}@${ver}`);
     }
@@ -159,26 +154,16 @@ const updateAPackage = (packages, name, version) => {
   });
 };
 
-/**
- * @param {string} yarnLock
- * @return {string}
- */
-const updatePackages = (yarnLock) => {
-  const json = lockFile.parse(yarnLock).object;
-  const packages = collectPackages(json);
+export const updatePackages = (yarnLock: string): string => {
+  const json: LockfileObject = lockfile.parse(yarnLock).object;
+  const packages: CollectedPackages = collectPackages(json);
 
-  Object.keys(packages).forEach((name) => {
-    Object.keys(packages[name]).forEach((version) => {
+  Object.keys(packages).forEach((name: string) => {
+    Object.keys(packages[name]).forEach((version: string) => {
       updateAPackage(packages, name, version);
     });
   });
 
   Object.assign(json, selectUpdates(packages));
-  return lockFile.stringify(json);
-};
-
-module.exports = {
-  collectPackages,
-  selectUpdates,
-  updatePackages,
+  return lockfile.stringify(json);
 };

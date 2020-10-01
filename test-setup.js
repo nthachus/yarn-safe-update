@@ -1,4 +1,3 @@
-/* eslint import/no-extraneous-dependencies: 0 */
 require('object.entries/auto');
 
 require('@babel/register')({
