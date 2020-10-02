@@ -1,9 +1,9 @@
 // @flow
-import lockfile from '@yarnpkg/lockfile';
+import * as lockfile from '@yarnpkg/lockfile';
 import semver from 'semver';
 
 import type { Dependencies, LockfileObject, LockManifest, Manifest } from './yarn-api';
-import { buildPackageData, getObjectKeys, parsePackageName, yarnInfo } from './yarn-api';
+import { buildPackageData, parsePackageName, yarnInfo } from './yarn-api';
 
 export type CollectedPackage = {
   versions: (?string)[],
@@ -85,11 +85,14 @@ const isCompatibleVers = (newVer: string, oldVer: string, packages: CollectedPac
 };
 
 const isCompatibleDeps = (newDeps: ?Dependencies, oldDeps: ?Dependencies, packages: CollectedPackages): boolean => {
-  const newKeys = getObjectKeys(newDeps);
-  if (!newKeys || !newKeys.length) return true;
+  if (!newDeps) return true;
+  if (!oldDeps) return false;
 
-  const oldKeys = getObjectKeys(oldDeps);
-  if (!oldKeys || !oldKeys.length) return false;
+  const newKeys = Object.keys(newDeps);
+  if (!newKeys.length) return true;
+
+  const oldKeys = Object.keys(oldDeps);
+  if (!oldKeys.length) return false;
 
   if (newKeys.some((k: string) => !oldKeys.includes(k))) return false;
 
@@ -116,7 +119,7 @@ const updateAPackage = (packages: CollectedPackages, name: string, version: stri
   if (!versions) {
     throw new Error(`Could not fetch package versions: ${name}`);
   }
-  semver.rsort(versions, true);
+  semver.rsort((versions: any[]), true);
 
   versions.some((ver: string) => {
     if (semver.lte(ver, version, true)) {

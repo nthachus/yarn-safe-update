@@ -15,8 +15,6 @@ export const parsePackageName = (name: string): [string, ?string] => {
   return i > 0 ? [name.substr(0, i), name.substr(i + 1)] : [name, null];
 };
 
-export const getObjectKeys = (obj: any): ?(string[]) => obj && Object.keys(obj);
-
 export const escapeRegex = (text: string): string => text.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
 
 // `dependencies` field in package info

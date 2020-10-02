@@ -213,13 +213,13 @@ declare module "mocha" {
   declare export var teardown: typeof teardown;
   declare export var suiteSetup: typeof suiteSetup;
   declare export var suiteTeardown: typeof suiteTeardown;
+  // declare export var before: typeof before;
   declare export var before: typeof before;
-  declare export var before: typeof before;
+  // declare export var after: typeof after;
   declare export var after: typeof after;
-  declare export var after: typeof after;
+  // declare export var beforeEach: typeof beforeEach;
   declare export var beforeEach: typeof beforeEach;
-  declare export var beforeEach: typeof beforeEach;
-  declare export var afterEach: typeof afterEach;
+  // declare export var afterEach: typeof afterEach;
   declare export var afterEach: typeof afterEach;
 
   declare export default $npm$mocha$Mocha;

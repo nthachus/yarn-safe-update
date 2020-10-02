@@ -14,12 +14,18 @@
     "node": ">=6"
   },
   "scripts": {
-    "lint": "node -r ./test-setup node_modules/eslint/bin/eslint.js . && node node_modules/flow-bin/cli.js check",
-    "format": "node node_modules/prettier/bin-prettier.js --write \"**/*.{js,json,md}\" --ignore-path .eslintignore",
-    "test": "node node_modules/mocha/bin/mocha -c -r ./test-setup -b -t 5000",
+    "lint": "yarn eslint . && yarn flow check --color always",
+    "format": "yarn prettier --write \"**/*.{js,json,md}\" --ignore-path .eslintignore",
+    "test": "yarn mocha -c -r ./test-setup -b -t 5000",
     "exec": "node -r ./test-setup src/cli.js",
-    "build": "node node_modules/rimraf/bin.js dist && node node_modules/webpack/bin/webpack.js --progress",
-    "clean": "node node_modules/rimraf/bin.js dist node_modules/.cache"
+    "build": "yarn rimraf dist && yarn webpack --progress",
+    "clean": "yarn rimraf dist node_modules/.cache",
+    "flow": "node node_modules/flow-bin/cli.js",
+    "eslint": "node -r ./test-setup node_modules/eslint/bin/eslint.js",
+    "prettier": "node node_modules/prettier/bin-prettier.js",
+    "mocha": "node node_modules/mocha/bin/mocha",
+    "webpack": "node node_modules/webpack/bin/webpack.js",
+    "rimraf": "node node_modules/rimraf/bin.js"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
@@ -34,6 +40,7 @@
     "acorn": "^6.2.1",
     "babel-eslint": "^10.1.0",
     "babel-loader": "~8.0.6",
+    "chai": "^4.2.0",
     "copy-webpack-plugin": "^5.1.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "~14.1.0",
@@ -68,14 +75,6 @@
   },
   "prettier": {
     "trailingComma": "es5",
-    "arrowParens": "always",
-    "overrides": [
-      {
-        "files": "*.json",
-        "options": {
-          "parser": "json-stringify"
-        }
-      }
-    ]
+    "arrowParens": "always"
   }
 }
