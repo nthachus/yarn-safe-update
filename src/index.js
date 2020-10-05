@@ -64,7 +64,12 @@ export const selectUpdates = (packages: CollectedPackages): LockfileObject => {
   return json;
 };
 
-const isCompatibleVers = (newVer: string, oldVer: string, packages: CollectedPackages, name: string): boolean => {
+const isCompatibleVers = (
+  newVer: string,
+  oldVer: string,
+  packages: CollectedPackages,
+  name: string
+): ?[string, CollectedPackage] => {
   const group: GroupedPackages = packages[name];
   const version = Object.keys(group).find((v: string) => group[v].versions.includes(oldVer));
   if (!version) {
@@ -78,40 +83,59 @@ const isCompatibleVers = (newVer: string, oldVer: string, packages: CollectedPac
     }
 
     if (typeof obj.updated !== 'string' || !semver.satisfies(obj.updated, newVer, true)) {
-      return false;
+      return null;
     }
   }
 
-  obj.versions.push(newVer);
-  if (typeof obj.updated !== 'string') obj.updated = obj.pkg.version;
-
-  return true;
+  return [newVer, obj];
 };
 
-const isCompatibleDeps = (newDeps: ?Dependencies, oldDeps: ?Dependencies, packages: CollectedPackages): boolean => {
-  if (!newDeps) return true;
-  if (!oldDeps) return false;
+const isCompatibleDeps = (
+  newDeps: ?Dependencies,
+  oldDeps: ?Dependencies,
+  packages: CollectedPackages
+): ?Array<[string, CollectedPackage]> => {
+  const list: Array<[string, CollectedPackage]> = [];
+
+  if (!newDeps) return list;
+  if (!oldDeps) return null;
 
   const newKeys = Object.keys(newDeps);
-  if (!newKeys.length) return true;
+  if (!newKeys.length) return list;
 
   const oldKeys = Object.keys(oldDeps);
-  if (!oldKeys.length) return false;
+  if (!oldKeys.length) return null;
 
-  if (newKeys.some((k: string) => !oldKeys.includes(k))) return false;
+  if (newKeys.some((k: string) => !oldKeys.includes(k))) return null;
 
-  return newKeys.every((name: string) => {
-    if (!newDeps[name] || !oldDeps[name]) return true;
+  if (
+    newKeys.every((name: string) => {
+      if (!newDeps[name] || !oldDeps[name]) return true;
 
-    const newVer = semver.validRange(newDeps[name], true);
-    const oldVer = semver.validRange(oldDeps[name], true);
+      const newVer = semver.validRange(newDeps[name], true);
+      const oldVer = semver.validRange(oldDeps[name], true);
+      if (newVer === oldVer || newVer === '*' || oldVer === '*') return true;
 
-    return (
-      newVer === oldVer ||
-      newVer === '*' ||
-      oldVer === '*' ||
-      isCompatibleVers(newDeps[name], oldDeps[name], packages, name)
-    );
+      const item = isCompatibleVers(newDeps[name], oldDeps[name], packages, name);
+      if (item) {
+        list.push(item);
+        return true;
+      }
+
+      return false;
+    })
+  ) {
+    return list;
+  }
+
+  return null;
+};
+
+const updateDepVersions = (depList: Array<[string, CollectedPackage]>): void => {
+  depList.forEach((item) => {
+    const [newVer, obj] = item;
+    obj.versions.push(newVer);
+    if (typeof obj.updated !== 'string') obj.updated = obj.pkg.version;
   });
 };
 
@@ -146,18 +170,18 @@ const updateAPackage = (packages: CollectedPackages, name: string, version: stri
       throw new Error(`Could not fetch package info: ${name}@${ver}`);
     }
 
-    if (
-      isCompatibleDeps(pkg.optionalDependencies, obj.pkg.optionalDependencies, packages) &&
-      isCompatibleDeps(pkg.dependencies, obj.pkg.dependencies, packages)
-    ) {
-      obj.pkg = buildPackageData(pkg, obj.pkg);
-      obj.updated = ver;
+    const upOpts = isCompatibleDeps(pkg.optionalDependencies, obj.pkg.optionalDependencies, packages);
+    if (!upOpts) return false;
 
-      console.info(' \x1b[33m%s\x1b[0m %s@%s -> %s', '[ UPDATE]', name, version, ver);
-      return true;
-    }
+    const upDeps = isCompatibleDeps(pkg.dependencies, obj.pkg.dependencies, packages);
+    if (!upDeps) return false;
 
-    return false;
+    obj.pkg = buildPackageData(pkg, obj.pkg);
+    obj.updated = ver;
+    updateDepVersions(upOpts.concat(upDeps));
+
+    console.info(' \x1b[33m%s\x1b[0m %s@%s -> %s', '[ UPDATE]', name, version, ver);
+    return true;
   });
 };
 
