@@ -39,7 +39,7 @@ export const collectPackages = (json: LockfileObject, exclude?: RegExp): Collect
         obj.updated = true; // TODO: should be numeric
       } else if (version && semver.clean(version, true) === pkg.version) {
         obj.updated = true;
-        console.info(' \x1b[32m%s\x1b[0m %s', '[  FIXED]', name);
+        console.log(' \x1b[32m%s\x1b[0m %s', '[  FIXED]', name);
       }
     }
   });
@@ -129,7 +129,7 @@ const updateAPackage = (packages: CollectedPackages, name: string, version: stri
     if (semver.lte(ver, version, true)) {
       obj.updated = true;
 
-      console.info(' \x1b[32m%s\x1b[0m %s@%s', '[HIGHEST]', name, version);
+      console.log(' \x1b[32m%s\x1b[0m %s@%s', '[HIGHEST]', name, version);
       return true;
     }
 
@@ -153,7 +153,7 @@ const updateAPackage = (packages: CollectedPackages, name: string, version: stri
       obj.pkg = buildPackageData(pkg, obj.pkg);
       obj.updated = ver;
 
-      console.warn(' \x1b[33m%s\x1b[0m %s@%s -> %s', '[ UPDATE]', name, version, ver);
+      console.info(' \x1b[33m%s\x1b[0m %s@%s -> %s', '[ UPDATE]', name, version, ver);
       return true;
     }
 

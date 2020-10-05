@@ -6,6 +6,8 @@ import { expect } from 'chai';
 const cliFilePath = path.resolve(__dirname, '../dist/cli.js');
 const executeCli = (...args: string[]) => execFileSync(process.execPath, [cliFilePath, ...args]);
 
+const lockFilePath = path.relative(process.cwd(), path.resolve(__dirname, 'fixtures/yarn.lock'));
+
 describe('CLI', () => {
   ['-v', '--version'].forEach((arg: string) => {
     it(`prints version with option '${arg}'`, () => {
@@ -28,6 +30,13 @@ describe('CLI', () => {
   });
 
   it('prints updated yarn.lock', () => {
-    // TODO !
+    const out = executeCli(lockFilePath, '-p');
+    expect(out)
+      .to.match(/^.*?\[\s*FIXED].*? concat-map@0\.0\.1/m)
+      .and.match(/^.*?\[\s*UPDATE].*? minimatch@3\.0\.0 -> 3/m)
+      .and.match(/^brace-expansion@\^1\.0\.0, brace-expansion@.*:$/m)
+      .and.match(/^concat-map@0\.0\.1:$/m)
+      .and.match(/[\r\n]minimatch@\^3\.0\.0:\s+version "/)
+      .and.not.match(/[\r\n]minimatch@\^3\.0\.0:\s+version "3\.0\.0"/);
   });
 });
