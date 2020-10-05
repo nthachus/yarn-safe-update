@@ -6,17 +6,22 @@ import commander from 'commander';
 import { version } from '../package.json';
 import { updatePackages } from './index';
 
-const program = commander
+commander
   .version(version, '-v, --version')
   .usage('[options] [yarn.lock path (default: yarn.lock)]')
-  .option('-p, --print', 'instead of saving the updated yarn.lock, print the result in stdout')
-  .parse(process.argv);
+  .option(
+    '-x, --exclude <exclude>',
+    'a RegExp pattern of packages not to upgrade (e.g. "^@babel")',
+    (val) => new RegExp(val)
+  )
+  .option('-p, --print', 'instead of saving the updated yarn.lock, print the result in console');
 
+const program = commander.parse(process.argv);
 const file = program.args.length ? program.args[0] : 'yarn.lock';
 
 try {
   const yarnLock = fs.readFileSync(file, 'utf8');
-  const updatedYarnLock = updatePackages(yarnLock);
+  const updatedYarnLock = updatePackages(yarnLock, program.exclude);
 
   if (program.print) {
     console.log(updatedYarnLock);

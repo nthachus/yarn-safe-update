@@ -19,8 +19,7 @@ export type CollectedPackages = {
   [key: string]: GroupedPackages,
 };
 
-// TODO excludes
-export const collectPackages = (json: LockfileObject): CollectedPackages => {
+export const collectPackages = (json: LockfileObject, exclude?: RegExp): CollectedPackages => {
   const packages: CollectedPackages = {};
 
   Object.keys(json).forEach((name: string) => {
@@ -34,9 +33,14 @@ export const collectPackages = (json: LockfileObject): CollectedPackages => {
     const obj: CollectedPackage = group[pkg.version];
 
     obj.versions.push(version);
-    if (!obj.updated && version && semver.clean(version, true) === pkg.version) {
-      obj.updated = true;
-      console.info(' \x1b[32m%s\x1b[0m %s', '[  FIXED]', name);
+
+    if (!obj.updated) {
+      if (exclude && exclude.test(name)) {
+        obj.updated = true; // TODO: should be numeric
+      } else if (version && semver.clean(version, true) === pkg.version) {
+        obj.updated = true;
+        console.info(' \x1b[32m%s\x1b[0m %s', '[  FIXED]', name);
+      }
     }
   });
 
@@ -157,9 +161,9 @@ const updateAPackage = (packages: CollectedPackages, name: string, version: stri
   });
 };
 
-export const updatePackages = (yarnLock: string): string => {
+export const updatePackages = (yarnLock: string, exclude?: RegExp): string => {
   const json: LockfileObject = lockfile.parse(yarnLock).object;
-  const packages: CollectedPackages = collectPackages(json);
+  const packages: CollectedPackages = collectPackages(json, exclude);
 
   Object.keys(packages).forEach((name: string) => {
     Object.keys(packages[name]).forEach((version: string) => {
