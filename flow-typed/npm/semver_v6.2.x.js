@@ -207,7 +207,7 @@ declare module "semver" {
   declare function coerce(
     version: string | SemVer,
     options?: Options
-  ): ?SemVer
+  ): ?SemVer;
 
   // Not explicitly documented, or deprecated
   declare function parse(version: string, options?: Options): ?SemVer;

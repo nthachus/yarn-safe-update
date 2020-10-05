@@ -56,7 +56,7 @@ declare module "commander" {
      *
      * @param {String} name
      * @param {String} [desc]
-     * @param {Mixed} [opts]
+     * @param {*} [opts]
      * @return {Command} the new command
      * @api public
      */
@@ -64,9 +64,9 @@ declare module "commander" {
       name: string,
       desc?: string,
       opts?: {
-       isDefault: boolean,
-       noHelp: boolean,
-       ...
+        isDefault: boolean,
+        noHelp: boolean,
+        ...
       }
     ): Command;
 
@@ -142,8 +142,8 @@ declare module "commander" {
      *
      * @param {String} flags
      * @param {String} description
-     * @param {Function|Mixed} fn or default
-     * @param {Mixed} defaultValue
+     * @param {Function|RegExp} fn or default
+     * @param {*} defaultValue
      * @return {Command} for chaining
      * @api public
      */
@@ -167,10 +167,10 @@ declare module "commander" {
      * @api public
      */
     parse(argv: Array<string>): this & {
-     [string]: any,
-     args: Array<string>,
-     rawArgs: Array<string>,
-     ...
+      [string]: any,
+      args: Array<string>,
+      rawArgs: Array<string>,
+      ...
     };
 
     /**
@@ -182,9 +182,9 @@ declare module "commander" {
      * @api public
      */
     parseOptions(argv: Array<string>): {
-     args: Array<string>,
-     unknown: Array<string>,
-     ...
+      args: Array<string>,
+      unknown: Array<string>,
+      ...
     };
 
     /**
@@ -248,7 +248,6 @@ declare module "commander" {
     /**
      * Get the name of the command
      *
-     * @param {String} name
      * @return {String|Command}
      * @api public
      */
@@ -288,8 +287,8 @@ declare module "commander" {
   }
 
   declare module.exports: Command & {
-   Command: (name?: string) => Command,
-   Options: (flags: string, description?: string) => Option,
-   ...
+    Command: (name?: string) => Command,
+    Options: (flags: string, description?: string) => Option,
+    ...
   };
 }

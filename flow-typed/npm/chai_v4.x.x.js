@@ -115,10 +115,10 @@ declare module "chai" {
     notify: (callback: () => mixed) => ExpectChain<T>,
     fulfilled: () => Promise<mixed> & ExpectChain<T>,
     // chai-subset
-    containSubset: (obj: {...} | Array< {...} >) => ExpectChain<T>,
+    containSubset: (obj: { ... } | Array<{ ... }>) => ExpectChain<T>,
     // chai-redux-mock-store
     dispatchedActions: (
-      actions: Array<{...} | ((action: {...}) => any)>
+      actions: Array<{ ... } | ((action: { ... }) => any)>
     ) => ExpectChain<T>,
     dispatchedTypes: (actions: Array<string>) => ExpectChain<T>,
     // chai-enzyme
@@ -187,8 +187,8 @@ declare module "chai" {
     static isAbove(val: number, abv: number, msg?: string): void;
     static isBelow(val: number, blw: number, msg?: string): void;
 
-    static exists(val : mixed, msg? : string) : void;
-    static notExists(val : mixed, msg? : string) : void;
+    static exists(val: mixed, msg?: string): void;
+    static notExists(val: mixed, msg?: string): void;
 
     static isAtMost(val: number, atmst: number, msg?: string): void;
     static isAtLeast(val: number, atlst: number, msg?: string): void;
@@ -214,8 +214,8 @@ declare module "chai" {
     static typeOf(val: mixed, type: string, msg?: string): void;
     static notTypeOf(val: mixed, type: string, msg?: string): void;
 
-    static instanceOf(val: mixed, constructor: Class< * >, msg?: string): void;
-    static notInstanceOf(val: mixed, constructor: Class< * >, msg?: string): void;
+    static instanceOf(val: mixed, constructor: Class<*>, msg?: string): void;
+    static notInstanceOf(val: mixed, constructor: Class<*>, msg?: string): void;
 
     static include(exp: string, inc: mixed, msg?: string): void;
     static include<T>(exp: Array<T>, inc: T, msg?: string): void;
@@ -223,8 +223,8 @@ declare module "chai" {
     static notInclude(exp: string, inc: mixed, msg?: string): void;
     static notInclude<T>(exp: Array<T>, inc: T, msg?: string): void;
 
-    static deepInclude<T>(haystack : T[] | string, needle : $Shape<T>, msg?: string) : void;
-    static notDeepInclude<T>(haystack : T[] | string, needle : $Shape<T>, msg?: string) : void;
+    static deepInclude<T>(haystack: T[] | string, needle: $Shape<T>, msg?: string): void;
+    static notDeepInclude<T>(haystack: T[] | string, needle: $Shape<T>, msg?: string): void;
 
     static match(exp: mixed, re: RegExp, msg?: string): void;
     static notMatch(exp: mixed, re: RegExp, msg?: string): void;
