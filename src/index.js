@@ -108,27 +108,23 @@ const isCompatibleDeps = (
 
   if (newKeys.some((k: string) => !oldKeys.includes(k))) return null;
 
-  if (
-    newKeys.every((name: string) => {
-      if (!newDeps[name] || !oldDeps[name]) return true;
+  const valid = newKeys.every((name: string) => {
+    if (!newDeps[name] || !oldDeps[name]) return true;
 
-      const newVer = semver.validRange(newDeps[name], true);
-      const oldVer = semver.validRange(oldDeps[name], true);
-      if (newVer === oldVer || newVer === '*' || oldVer === '*') return true;
+    const newVer = semver.validRange(newDeps[name], true);
+    const oldVer = semver.validRange(oldDeps[name], true);
+    if (newVer === oldVer || newVer === '*' || oldVer === '*') return true;
 
-      const item = isCompatibleVers(newDeps[name], oldDeps[name], packages, name);
-      if (item) {
-        list.push(item);
-        return true;
-      }
+    const item = isCompatibleVers(newDeps[name], oldDeps[name], packages, name);
+    if (item) {
+      list.push(item);
+      return true;
+    }
 
-      return false;
-    })
-  ) {
-    return list;
-  }
+    return false;
+  });
 
-  return null;
+  return valid ? list : null;
 };
 
 const updateDepVersions = (depList: Array<[string, CollectedPackage]>): void => {
