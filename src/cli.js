@@ -6,6 +6,7 @@ import commander from 'commander';
 import { version } from '../package.json';
 import { updatePackages } from './index';
 
+// noinspection HtmlUnknownTag
 commander
   .version(version, '-v, --version')
   .usage('[options] [yarn.lock path (default: yarn.lock)]')

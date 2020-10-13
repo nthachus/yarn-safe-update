@@ -98,12 +98,11 @@ const isCompatibleDeps = (
   const list: Array<[string, CollectedPackage]> = [];
 
   if (!newDeps) return list;
-  if (!oldDeps) return null;
-
-  const newKeys = Object.keys(newDeps);
+  const newKeys: string[] = Object.keys(newDeps);
   if (!newKeys.length) return list;
 
-  const oldKeys = Object.keys(oldDeps);
+  if (!oldDeps) return null;
+  const oldKeys: string[] = Object.keys(oldDeps);
   if (!oldKeys.length) return null;
 
   if (newKeys.some((k: string) => !oldKeys.includes(k))) return null;

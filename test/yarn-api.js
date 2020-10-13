@@ -28,6 +28,7 @@ describe('Yarn API', () => {
   it('gets information of a package', () => {
     const info: Manifest = yarnInfo('p-limit@2.3.0');
 
+    // noinspection SpellCheckingInspection
     expect(info)
       .to.be.an('object')
       .that.deep.include({ dependencies: { 'p-try': '^2.0.0' } })

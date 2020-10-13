@@ -61,10 +61,12 @@ export const resolvePackageUrl = (pkg: Manifest, oldPkg: LockManifest): ?string 
   return pkg.dist && pkg.dist.shasum ? `${url}#${pkg.dist.shasum}` : url;
 };
 
+export const isEmptyObject = (obj: any): boolean => !obj || !Object.keys(obj).length;
+
 export const buildPackageData = (pkg: Manifest, oldPkg: LockManifest): LockManifest => ({
   version: pkg.version,
   resolved: resolvePackageUrl(pkg, oldPkg),
   integrity: pkg.dist && pkg.dist.integrity,
-  dependencies: pkg.dependencies,
-  optionalDependencies: pkg.optionalDependencies,
+  dependencies: isEmptyObject(pkg.dependencies) ? null : pkg.dependencies,
+  optionalDependencies: isEmptyObject(pkg.optionalDependencies) ? null : pkg.optionalDependencies,
 });
