@@ -24,12 +24,14 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-
       - name: Cache Node.js modules
-        uses: c-hive/gha-yarn-cache@v1
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
       - name: Install dependencies
         run: yarn --ignore-optional --ignore-engines
-
       - name: Check source code
         run: yarn format -c && yarn lint
       - name: Build and test
