@@ -19,18 +19,18 @@ jobs:
         node: [6, 8, 10, 12]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node }}
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
 
-    - name: Cache Node.js modules
-      uses: c-hive/gha-yarn-cache@v1
-    - name: Install dependencies
-      run: yarn --ignore-optional --ignore-engines
+      - name: Cache Node.js modules
+        uses: c-hive/gha-yarn-cache@v1
+      - name: Install dependencies
+        run: yarn --ignore-optional --ignore-engines
 
-    - name: Check source code
-      run: yarn prettier -c "**/*.{js,json,md}" && yarn lint
-    - name: Build and test
-      run: yarn build && yarn test
+      - name: Check source code
+        run: yarn prettier -c "**/*.{js,json,md}" && yarn lint
+      - name: Build and test
+        run: yarn build && yarn test
