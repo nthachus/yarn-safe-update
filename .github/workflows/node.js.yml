@@ -31,6 +31,6 @@ jobs:
         run: yarn --ignore-optional --ignore-engines
 
       - name: Check source code
-        run: yarn prettier -c "**/*.{js,json,md}" && yarn lint
+        run: yarn format -c && yarn lint
       - name: Build and test
         run: yarn build && yarn test
