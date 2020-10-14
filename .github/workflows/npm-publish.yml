@@ -16,12 +16,15 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Use cached Node.js modules
-        uses: c-hive/gha-yarn-cache@v1
       - name: Install dependencies
         run: yarn --ignore-optional
-
-      - run: yarn build && cd dist && yarn publish
+      - run: yarn build
+      - run: cd dist && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
