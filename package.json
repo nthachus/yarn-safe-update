@@ -15,7 +15,7 @@
   },
   "scripts": {
     "lint": "yarn eslint . && yarn flow check --color always",
-    "format": "yarn prettier --write \"**/*.{js,json,md}\" --ignore-path .eslintignore",
+    "format": "yarn prettier \"**/*.{js,json,md}\" --ignore-path .eslintignore",
     "test": "yarn mocha -c -r ./test-setup -b -t 5000",
     "start": "node -r ./test-setup src/cli.js",
     "build": "yarn rimraf dist && yarn webpack --progress",
