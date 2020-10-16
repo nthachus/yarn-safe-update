@@ -1,6 +1,6 @@
 {
   "name": "yarn-safe-update",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Safety updating tool for packages in yarn.lock file",
   "author": "Thach Nguyen (https://github.com/nthachus)",
   "license": "MIT",
