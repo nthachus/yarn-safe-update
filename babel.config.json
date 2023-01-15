@@ -5,7 +5,8 @@
       {
         "targets": {
           "node": "6"
-        }
+        },
+        "exclude": ["transform-for-of"]
       }
     ],
     "@babel/preset-flow"

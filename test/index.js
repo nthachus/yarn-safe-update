@@ -56,7 +56,7 @@ brace-expansion@^1.0.0, brace-expansion@^1.1.7:
   it('should update related packages', () => {
     // noinspection SpellCheckingInspection
     const yarnLock = `
-balanced-match@>=0.3.0:
+"balanced-match@>=0.3.0 <2":
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-0.4.2.tgz#cb3f3e3c732dc0f01ee70b403f302e61d7709838"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
@@ -65,7 +65,7 @@ brace-expansion@^1.0.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.3.tgz#46bff50115d47fc9ab89854abb87d98078a10991"
   dependencies:
-    balanced-match ">=0.3.0"
+    balanced-match ">=0.3.0 <2"
     concat-map "0"
 
 concat-map@0:
@@ -84,9 +84,10 @@ concat-map@0:
 
     // noinspection SpellCheckingInspection
     expect(cleanYarnLock(updated)).to.equal(`
-balanced-match@>=0.3.0, balanced-match@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
+"balanced-match@>=0.3.0 <2", balanced-match@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
+  integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
 brace-expansion@^1.0.0, brace-expansion@^1.1.7:
   version "1.1.11"

@@ -1,5 +1,5 @@
 // @flow
-import * as lockfile from '@yarnpkg/lockfile';
+import { parse, stringify } from '@yarnpkg/lockfile';
 import semver from 'semver';
 
 import type { Dependencies, LockfileObject, LockManifest, Manifest } from './yarn-api';
@@ -181,7 +181,7 @@ const updateAPackage = (packages: CollectedPackages, name: string, version: stri
 };
 
 export const updatePackages = (yarnLock: string, exclude?: RegExp): string => {
-  const json: LockfileObject = lockfile.parse(yarnLock).object;
+  const json: LockfileObject = parse(yarnLock).object;
   const packages: CollectedPackages = collectPackages(json, exclude);
 
   Object.keys(packages).forEach((name: string) => {
@@ -191,5 +191,5 @@ export const updatePackages = (yarnLock: string, exclude?: RegExp): string => {
   });
 
   Object.assign(json, selectUpdates(packages));
-  return lockfile.stringify(json);
+  return stringify(json);
 };

@@ -1,10 +1,10 @@
 const path = require('path');
-const webpack = require('webpack');
+const { BannerPlugin } = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const webpackConfig = (config) => {
-  const base = {
+  return Object.assign(config, {
     mode: 'production',
     context: __dirname,
     target: 'node',
@@ -16,8 +16,8 @@ const webpackConfig = (config) => {
       rules: [
         {
           // transpile ES6-8 into ES5
-          test: /\.m?js$/,
-          // exclude: /node_modules\b/,
+          test: /\.m?js$/i,
+          exclude: /node_modules.(invariant|strip-bom|safe-buffer|commander)\b/i,
           loader: 'babel-loader',
           options: { cacheDirectory: true },
         },
@@ -29,7 +29,26 @@ const webpackConfig = (config) => {
         {
           test: path.resolve(__dirname, 'package.json'),
           loader: 'string-replace-loader',
-          options: { search: ',\\s*"repository"[\\s\\S]*$', flags: '', replace: '\n}' },
+          options: { search: ',\\s*"repository":[\\s\\S]*', flags: '', replace: '\n}' },
+        },
+        {
+          test: /node_modules.semver.index\.js$/i,
+          loader: 'string-replace-loader',
+          options: {
+            search: '^  (?!clean|satisfies|validRange|rsort|lte|[A-Z])\\w+: require',
+            flags: 'gm',
+            replace: '//$&',
+          },
+        },
+        {
+          test: /node_modules.@yarnpkg.lockfile.package\.json$/i,
+          loader: 'string-replace-loader',
+          options: { search: '[\\s\\S]*("yarnVersion":\\s*"[^"]*")[\\s\\S]*', flags: '', replace: '{ $1 }' },
+        },
+        {
+          test: /node_modules.ssri.index\.js$/i,
+          loader: 'string-replace-loader',
+          options: { search: '^module\\.exports\\.(?!parse)(\\w+) = \\1\\w*;?$', flags: 'gm', replace: '// $&' },
         },
       ],
     },
@@ -39,14 +58,12 @@ const webpackConfig = (config) => {
       minimizer: [
         new TerserPlugin({
           cache: true,
-          parallel: true,
-          terserOptions: { mangle: false, output: { beautify: true } },
+          // parallel: true,
+          terserOptions: { mangle: false, output: { beautify: true, indent_level: 2 } },
         }),
       ],
     },
-  };
-
-  return Object.assign(base, config);
+  });
 };
 
 // noinspection JSUnusedGlobalSymbols
@@ -63,7 +80,7 @@ module.exports = [
       './index': 'commonjs2 ./index',
     },
     plugins: [
-      new webpack.BannerPlugin({
+      new BannerPlugin({
         banner: '#!/usr/bin/env node\nrequire("v8-compile-cache");',
         raw: true,
       }),

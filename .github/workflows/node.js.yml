@@ -19,19 +19,15 @@ jobs:
         node: [6, 8, 10, 12]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          cache: yarn
 
       - name: Install dependencies
-        run: yarn --ignore-optional --ignore-engines
+        run: yarn --ignore-optional --ignore-scripts --ignore-engines
       - name: Check source code
         run: yarn format -c && yarn lint
       - name: Build and test
