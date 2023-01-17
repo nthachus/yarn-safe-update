@@ -46,6 +46,15 @@ const webpackConfig = (config) => {
           options: { search: '[\\s\\S]*("yarnVersion":\\s*"[^"]*")[\\s\\S]*', flags: '', replace: '{ $1 }' },
         },
         {
+          test: /node_modules.@yarnpkg.lockfile.src.errors\.js$/i,
+          loader: 'string-replace-loader',
+          options: {
+            search: '^export class ResponseError extends Error \\{[\\s\\S]*\\}',
+            flags: 'm',
+            replace: '/*\n$&\n*/',
+          },
+        },
+        {
           test: /node_modules.ssri.index\.js$/i,
           loader: 'string-replace-loader',
           options: { search: '^module\\.exports\\.(?!parse)(\\w+) = \\1\\w*;?$', flags: 'gm', replace: '// $&' },
